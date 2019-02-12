@@ -1,9 +1,8 @@
 #include <ostream>
 #include <string>
 
-#undef EOF
 enum TOKEN {
-	    EOF		= 0 ,
+	    EOF_T	= 0 ,
 	    UNKNOWN	=-1 ,
 	    ERROR	=-2 ,
 	    PLUS	='+',
@@ -38,13 +37,14 @@ enum TOKEN {
 	    REAL	= 8 };
 
 class Token{
-  TOKEN id=EOF;
-  int line=0;
-  int col=0;
+  TOKEN id;
+  int line;
+  int col;
   std::string text;
 public:
   friend std::ostream& operator<<(std::ostream &o, Token t);
-  operator bool()const{return id!=EOF;
+  Token(TOKEN t,int l,int c,std::string tx):id(t),line(l),col(c),text(tx){}
+  operator bool()const{return id!=EOF_T;
   }
 };
 bool initialize(char* filename);

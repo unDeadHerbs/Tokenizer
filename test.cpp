@@ -12,9 +12,11 @@ int main(int argc, char *argv[]) {
        << endl
        << "| Token Type | Token Value" << endl
        << "+------------+-- - - -  -  -" << endl;
-  initialize(argv[1]);
-  Token t;
+  if (!initialize(argv[1]))
+    exit(-1);
+  Token t(TOKEN(0), 0, 0, "");
   while ((t = get_token()))
     cout << t << endl;
   cleanup();
+  cout << "+------------+-- - - -  -  -" << endl;
 }
