@@ -1,4 +1,4 @@
-the cat in the hat + 1 2 3 45 ~= 2.3 1e3 2e-12 .1e3;
+the cat + 1 2 45 ~= 2.3 1e3 2e-12 .1e3;
 <<- a block comment
     as a note: our parser won't be able to deal with long tokens
     if there are invalid partial tokens we can't backup more than 1 and so must error
@@ -8,8 +8,8 @@ the cat in the hat + 1 2 3 45 ~= 2.3 1e3 2e-12 .1e3;
 ->>
 "another token"
 "string with unicode\u21 \u222Be\u207Fdn"
-# "\uc\ug\uc"
+error "\uc\ug\uc"
 # line comment
-error1 1e+f
-error2 <<j
+handeled 1e+f
+handeled <<j
 # line comment withouth newline

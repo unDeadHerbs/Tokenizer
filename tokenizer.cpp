@@ -1,8 +1,10 @@
 #include "tokenizer.hpp"
 using std::string;
 #include <ctype.h>
+#include <queue>
 #include <stdio.h>
 #include <stdlib.h>
+using std::queue;
 
 #define DEBUG 0
 #if DEBUG > 0
@@ -128,10 +130,16 @@ Token get_token() {
    DPRINT("Current token is :" << tokstr),                                     \
    ch == '\n' ? (row++, col = 1) : col++, ch)
 #define UNGETCHAR() (ungetc(ch, fp), tokstr.pop_back(), ch = *tokstr.rbegin())
+  static queue<Token> tok_store;
   while (state)
     switch (state) {
     case START_S:
       DPRINT("Going to state START_S");
+      if (tok_store.size()) {
+        Token t = tok_store.front();
+        tok_store.pop();
+        return t;
+      }
       tokstr = "";
       r = row;
       c = col;
@@ -157,8 +165,11 @@ Token get_token() {
         case '<':
           if ('-' == NEXT_CHAR)
             state = COMMENT_BLOCK_S;
-          else
-            return Token(ERROR, r, c, tokstr);
+          else {
+            UNGETCHAR();
+            tok_store.push(Token(TOKEN('<'), r, c + 1, "<"));
+            return Token(TOKEN('<'), r, c, "<");
+          }
           break;
         default:
           UNGETCHAR();
@@ -263,8 +274,11 @@ Token get_token() {
               } else
                 UNGETCHAR();
               tokstr += hex_to_unicode(hex);
-            } else
-              return Token(ERROR, r, c, tokstr);
+            } else {
+              tok_store.push(Token(ERROR, row, col, "bad Unicode"));
+              UNGETCHAR();
+              tokstr += "\\u";
+            }
           } break;
           default:
             break;
@@ -272,7 +286,7 @@ Token get_token() {
       return Token(STRING, r, c, tokstr);
     case NUMBER_S:
       DPRINT("Going to state NUMBER_S");
-      if (CURCHAR != '.')
+      if (CURCHAR != '.') // incase we jumped here from OPERATOR_S
         while (NUMBER_S == next_state(NEXT_CHAR))
           ;
       if (CURCHAR == '.' || CURCHAR == 'e' || CURCHAR == 'E') // it's a real
@@ -292,7 +306,17 @@ Token get_token() {
               // check if . in tokstr and then produce int or real
               // ident e
               // operator +-
-              return Token(ERROR, r, c, tokstr);
+              UNGETCHAR();
+              tok_store.push(Token(IDENT, row, col - 1,
+                                   string() + *(tokstr.rbegin() + 1)));
+              tok_store.push(Token(TOKEN(*tokstr.rbegin()), row, col,
+                                   string() + *tokstr.rbegin()));
+              tokstr.pop_back();
+              tokstr.pop_back();
+              if (tokstr.find('.') != string::npos)
+                return Token(REAL, r, c, tokstr);
+              else
+                return Token(INT, r, c, tokstr);
             }
           } else if (NUMBER_S == next_state(CURCHAR)) {
             while (NUMBER_S == next_state(NEXT_CHAR))
