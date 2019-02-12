@@ -11,14 +11,14 @@ msan:
 # generate the ctags file
 TAGS:
 	@rm -f TAGS
-	@ls|grep "pp$$"|xargs -r ctags -a
+	@ls|grep "pp$$"|xargs -r etags -a
 	@echo "Generated Tags"
 
 # use the ctags file to find all excicutables
 .PHOMY:mains
 mains:
 	@for f in `ls *.c*` ; do \
-		if ctags -o - $$f | grep "int main(" - > /dev/null; \
+		if etags -o - $$f | grep "int main(" - > /dev/null; \
 			then echo $$f | sed -e 's/[.][^.]*$$/.bin/' -e 's/.*/make --no-print-directory &/' |sh; \
 		fi ; \
 	done
