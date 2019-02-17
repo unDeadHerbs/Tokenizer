@@ -18,7 +18,7 @@ using std::queue;
 
 static FILE *fp;
 bool initialize(char *filename) {
-  fp = fopen(filename, "r");
+  fp = fopen(filename, "rb");
   DPRINT("initialized fp=" << fp);
   return fp != NULL;
 }
