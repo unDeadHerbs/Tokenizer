@@ -13,7 +13,7 @@ using std::queue;
   (std::cout << "DPRINT: File:" << __FILE__ << " Line:" << __LINE__ << " - "   \
              << x << std::endl)
 #else
-#define DPRINT(x) (0)
+#define DPRINT(x) (NULL)
 #endif
 
 static FILE *fp;
@@ -122,20 +122,24 @@ Token get_token() {
   static int col = 1;
   int r, c;
   string tokstr;
-  static char ch;
-#define CURCHAR (ch)
+  static string ch;
+#define CURCHAR ((char)(ch.front()))
 #define NEXT_CHAR                                                              \
-  (ch = fgetc(fp), tokstr += ch,                                               \
-   DPRINT("got char '" << ch << "' from line:" << row << " col:" << col),      \
+  (DPRINT("remove old front"), ch.erase(0, 1),                                 \
+   (ch.size() ? (DPRINT("has stored tokens"), NULL)                            \
+              : (DPRINT("getting next token"), ch += fgetc(fp), NULL)),        \
+   tokstr += CURCHAR,                                                          \
+   DPRINT("got char '" << CURCHAR << "' from line:" << row << " col:" << col), \
    DPRINT("Current token is :" << tokstr),                                     \
-   ch == '\n' ? (row++, col = 1) : col++, ch)
-#define UNGETCHAR() (ungetc(ch, fp), tokstr.pop_back(), ch = *tokstr.rbegin())
+   CURCHAR == '\n' ? (row++, col = 1) : col++, CURCHAR)
+#define UNGETCHAR() (tokstr.pop_back(), ch = tokstr.back() + ch)
   static queue<Token> tok_store;
   while (state)
     switch (state) {
     case START_S:
       DPRINT("Going to state START_S");
       if (tok_store.size()) {
+        DPRINT("Found stored token");
         Token t = tok_store.front();
         tok_store.pop();
         return t;
@@ -143,7 +147,9 @@ Token get_token() {
       tokstr = "";
       r = row;
       c = col;
+      DPRINT("Finding next state");
       state = next_state(NEXT_CHAR);
+      DPRINT("off to the next state");
       break;
     case ERROR_S:
       DPRINT("Going to state ERROR_S");
@@ -167,13 +173,13 @@ Token get_token() {
             state = COMMENT_BLOCK_S;
           else {
             UNGETCHAR();
-            tok_store.push(Token(TOKEN('<'), r, c + 1, "<"));
-            return Token(TOKEN('<'), r, c, "<");
+            UNGETCHAR();
+            return Token(TOKEN(CURCHAR), r, c, tokstr);
           }
           break;
         default:
           UNGETCHAR();
-          return Token(TOKEN('<'), r, c, tokstr);
+          return Token(TOKEN(CURCHAR), r, c, tokstr);
         }
         break;
       case '>':
@@ -182,7 +188,7 @@ Token get_token() {
           return Token(LESS_EQ, r, c, tokstr);
         default:
           UNGETCHAR();
-          return Token(TOKEN('>'), r, c, tokstr);
+          return Token(TOKEN(CURCHAR), r, c, tokstr);
         }
       case '~':
         switch (NEXT_CHAR) {
@@ -277,7 +283,7 @@ Token get_token() {
             } else {
               tok_store.push(Token(ERROR, row, col, "bad Unicode"));
               UNGETCHAR();
-              tokstr += "\\u";
+              // tokstr += "\\u";
             }
           } break;
           default:
@@ -286,12 +292,11 @@ Token get_token() {
       return Token(STRING, r, c, tokstr);
     case NUMBER_S:
       DPRINT("Going to state NUMBER_S");
-      if (CURCHAR != '.') // incase we jumped here from OPERATOR_S
-        while (NUMBER_S == next_state(NEXT_CHAR))
-          ;
-      if (CURCHAR == '.' || CURCHAR == 'e' || CURCHAR == 'E') // it's a real
-      {
-        if (CURCHAR == '.') // get . and num
+      while (NUMBER_S == next_state(CURCHAR))
+        NEXT_CHAR;
+      if (CURCHAR == '.' || CURCHAR == 'e' ||
+          CURCHAR == 'E') { // it's (probably) a real
+        if (CURCHAR == '.')
           while (NUMBER_S == next_state(NEXT_CHAR))
             ;
         if (CURCHAR == 'e' || CURCHAR == 'E') {
@@ -303,16 +308,9 @@ Token get_token() {
                 ;
               UNGETCHAR();
             } else {
-              // check if . in tokstr and then produce int or real
-              // ident e
-              // operator +-
-              UNGETCHAR();
-              tok_store.push(Token(IDENT, row, col - 1,
-                                   string() + *(tokstr.rbegin() + 1)));
-              tok_store.push(Token(TOKEN(*tokstr.rbegin()), row, col,
-                                   string() + *tokstr.rbegin()));
-              tokstr.pop_back();
-              tokstr.pop_back();
+              UNGETCHAR(); // not num
+              UNGETCHAR(); //+-
+              UNGETCHAR(); // eE
               if (tokstr.find('.') != string::npos)
                 return Token(REAL, r, c, tokstr);
               else
@@ -323,8 +321,12 @@ Token get_token() {
               ;
             UNGETCHAR();
           } else {
-            UNGETCHAR();
-            return Token(REAL, r, c, tokstr);
+            UNGETCHAR(); // not num or +-
+            UNGETCHAR(); // eE
+            if (tokstr.find('.') != string::npos)
+              return Token(REAL, r, c, tokstr);
+            else
+              return Token(INT, r, c, tokstr);
           }
         }
         return Token(REAL, r, c, tokstr);

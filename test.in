@@ -12,4 +12,5 @@ error "\uc\ug\uc"
 # line comment
 handeled 1e+f
 handeled <<j
+handeled <<<- comment with less before it ->>
 # line comment withouth newline
