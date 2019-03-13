@@ -12,9 +12,7 @@ int main(int argc, char* argv[]) {
 		cout << "Usage: " << argv[0] << " [Filename]" << endl;
 		return 0;
 	}
-	cout << "Starting tokenizer test." << endl
-	     << endl
-	     << "| Token Type | Token Value" << endl
+	cout << "| Token Type | Token Value" << endl
 	     << "+------------+-- - - -  -  -" << endl;
 	if (!initialize(argv[1])) exit(-1);
 	while (Token t = get_token()) cout << t << endl;
