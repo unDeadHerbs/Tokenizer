@@ -1,3 +1,5 @@
+#ifndef __TOKENIZER_HPP__
+#define __TOKENIZER_HPP__
 #include <ostream>
 #include <string>
 
@@ -50,4 +52,5 @@ public:
 bool initialize(char* filename);
 Token get_token();
 bool cleanup();
+#endif
 
