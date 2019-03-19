@@ -38,7 +38,7 @@ enum TOKEN {
 	    STRING	= 7 ,
 	    REAL	= 8 };
 
-class Token{
+struct Token{
   TOKEN id;
   int line;
   int col;
