@@ -282,6 +282,11 @@ Token get_token() {
 							default:
 								break;
 						}
+				// Remove the quote marks
+				// TODO: Check that the quotes are there first, this could be the EOF
+				// case.
+				tokstr.erase(tokstr.begin());
+				tokstr.erase(tokstr.end() - 1);
 				return Token(STRING, r, c, tokstr);
 			case NUMBER_S:
 				DPRINT("Going to state NUMBER_S");
