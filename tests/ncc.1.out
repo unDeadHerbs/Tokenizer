@@ -12,10 +12,10 @@
 |       REAL | '2e-12' at 1:35
 |       REAL | '.1e3' at 1:42
 |  SEMICOLON | ';' at 1:48
-|     STRING | '"another token"' at 9:1
-|     STRING | '"string with unicode! ∫eⁿdn"' at 10:1
+|     STRING | 'another token' at 9:1
+|     STRING | 'string with unicode! ∫eⁿdn' at 10:1
 |      IDENT | 'error' at 11:1
-|     STRING | '"g"' at 11:8
+|     STRING | 'g' at 11:8
 |      ERROR | 'bad Unicode' at 11:16
 |      IDENT | 'handeled' at 13:1
 |        INT | '1' at 13:11

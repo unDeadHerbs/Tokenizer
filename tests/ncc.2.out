@@ -1,0 +1,23 @@
+| Token Type | Token Value
++------------+-- - - -  -  -
+|     STRING | '外国語の学習と教授' at 1:1
+|     STRING | 'Language Learning and Teaching' at 2:1
+|     STRING | 'Изучение и обучение иностранных языков' at 3:1
+|     STRING | 'Tere Daaheng Aneng Karimah' at 4:1
+|     STRING | '語文教學・语文教学' at 5:1
+|     STRING | 'Enseñanza y estudio de idiomas' at 6:1
+|     STRING | 'Изучаване и Преподаване на Чужди Езици' at 7:1
+|     STRING | 'ქართული ენის შესწავლა და სწავლება' at 8:1
+|     STRING | ''læŋɡwidʒ 'lɘr:niŋ ænd 'ti:tʃiŋ' at 9:1
+|     STRING | 'Lus kawm thaib qhia' at 10:1
+|     STRING | 'Ngôn Ngữ, Sự học,' at 11:1
+|     STRING | '‭‫ללמוד וללמד את השֵפה' at 12:1
+|     STRING | 'L'enseignement et l'étude des langues' at 13:1
+|     STRING | '말배우기와 가르치기' at 14:1
+|     STRING | 'Nauka języków obcychi' at 15:1
+|     STRING | 'Γλωσσική Εκμὰθηση και Διδασκαλία' at 16:1
+|     STRING | '‭‫ﺗﺪﺭﯾﺲ ﻭ ﯾﺎﺩﮔﯿﺮﯼ ﺯﺑﺎﻥ' at 17:1
+|     STRING | 'Sprachlernen und -lehren' at 18:1
+|     STRING | '‭‫ﺗﻌﻠﻢ ﻭﺗﺪﺭﻳﺲ ﺍﻟﻌﺮﺑﻴﺔ' at 19:1
+|     STRING | 'เรียนและสอนภาษา' at 20:1
++------------+-- - - -  -  -
