@@ -1,9 +1,13 @@
 CXX         = clang++
-LIBARYFLAGS = -lncurses
+LIBARYFLAGS = 
 CXXFLAGS    = -std=c++1z -Wall -Wextra -Wparentheses -g $(SANS)
 
-.PHOMY:all seg msan
-all: format TAGS deps mains
+.PHONY:all seg msan
+all:
+	@make -j1 format --no-print-directory
+	@make -j1 TAGS --no-print-directory
+	@make -j1 deps --no-print-directory
+	@make -j1 mains --no-print-directory
 seg: clean msan
 msan:
 	make --no-print-directory all SANS=-fsanitize=address
@@ -15,7 +19,7 @@ TAGS:
 	@echo "Generated Tags"
 
 # use the ctags file to find all excicutables
-.PHOMY:mains
+.PHONY:mains
 mains:
 	@for f in `ls *.c*` ; do \
 		if etags -o - $$f | grep "int main(" - > /dev/null; \
@@ -23,7 +27,7 @@ mains:
 		fi ; \
 	done
 
-.PHOMY:deps
+.PHONY:deps
 deps:
 	-@for f in `ls *.cpp` ; do \
 		echo $$f | sed -e 's,cpp$$,d,' -e 's/.*/make -s .d\/&/'|sh; \
@@ -44,21 +48,20 @@ $(DEPDIR)/%.d: %.cpp
 	@echo "remade $@"
 
 # emacs flycheck-mode
-.PHOMY:check-syntax csyntax
+.PHONY:check-syntax csyntax
 check-syntax: csyntax
 csyntax:
 	$(CXX) $(CXXFLAGS) -c ${CHK_SOURCES} -o /dev/null
 
-.PHOMY: clean
-clean:
-	rm -f *.o *.bin .d/*.d
-	rmdir .d
+.PHONY: clean
+clean: deps
+	find .d/*|xargs cat|grep -E -o "[^ ]*[.]o"|uniq|xargs rm -f
+	rm -rf .d
 
-.PHOMY: format
+.PHONY: format
 format:
-	@find|egrep '.*[.](cpp|cxx|cc|c++|c|tpp|txx)$$'|sed 's/[] ()'\''\\[&;]/\\&/g'|xargs clang-format -i -style=file
+	@find|egrep '.*[.](cpp|hpp|cxx|hxx|cc|c++|c|h|tpp|txx)$$'|sed 's/[] ()'\''\\[&;]/\\&/g'|xargs clang-format -i -style=file
 	@echo "reformatted code"
-
 
 include $(wildcard $(DEPDIR)/*.d)
 include $(wildcard *.d)
