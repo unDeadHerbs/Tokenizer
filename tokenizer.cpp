@@ -159,7 +159,7 @@ Token get_token() {
 					case '<':
 						switch (NEXT_CHAR) {
 							case '=':
-								return Token(GREATER_EQ, r, c, tokstr);
+								return Token(LESS_EQ, r, c, tokstr);
 							case '-':
 								return Token(ASSIGN, r, c, tokstr);
 							case '<':
@@ -179,7 +179,7 @@ Token get_token() {
 					case '>':
 						switch (NEXT_CHAR) {
 							case '=':
-								return Token(LESS_EQ, r, c, tokstr);
+								return Token(GREATER_EQ, r, c, tokstr);
 							default:
 								UNGETCHAR();
 								return Token(TOKEN(CURCHAR), r, c, tokstr);
