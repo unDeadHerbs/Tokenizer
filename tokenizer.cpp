@@ -61,6 +61,7 @@ STATE next_state(char tok) {
 		case ']':
 		case '{':
 		case '}':
+		case '|':
 		case '&':
 		case '.':
 		case '@':
